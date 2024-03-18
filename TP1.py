@@ -49,3 +49,4 @@ with open("terminos.txt", "w") as f:
 print("Cantidad de archivos", cant_files  )
 print("Cantidad de tokens:", cant_tokens )
 print("Cantidad de terminos:", cant_terms )
+print("")
