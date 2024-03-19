@@ -26,7 +26,6 @@ cant_terms = 0
 terms_length = 0
 unique_terms = 0
 terms = {}
-lo
 for name in os.listdir("RI-tknz-data"):
     name = "RI-tknz-data/" + name
     termsAux = {}
@@ -41,7 +40,6 @@ for name in os.listdir("RI-tknz-data"):
             terms[termAux]["df"] += 1
         else:
             terms[termAux] = {"cf": termsAux[termAux]["cf"],"df": 1}
-            terms_length = len(terms[termAux]["df"] += 1)
 
 sorted_terms = sorted(terms.items(), key=lambda item: item[1].get("cf", 0), reverse=True)
 
@@ -51,6 +49,7 @@ with open("terminos.txt", "w") as f:
         f.write(f"{term} {info['cf']} {info['df']}\n")
         if info['cf'] == 1:
             unique_terms += 1
+            terms_length += len(term)
 
 print("Cantidad de archivos", cant_files  )
 print("Cantidad de tokens:", cant_tokens )
