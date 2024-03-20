@@ -23,17 +23,29 @@ def contador(terms, tokens):
 cant_files = len(os.listdir("RI-tknz-data"))
 cant_tokens = 0
 cant_terms = 0
+cant_min_tokens = 0
+cant_max_tokens = 0
+cant_min_terms = 0
+cant_max_terms = 0
 terms_length = 0
 unique_terms = 0
 terms = {}
 for name in os.listdir("RI-tknz-data"):
     name = "RI-tknz-data/" + name
     termsAux = {}
+    cant_tokens_doc = 0
     with open(name) as archivo:
         for linea in archivo:
             tokens=tokenizador(linea)
             termsAux = contador(termsAux,tokens)
             cant_tokens += len(tokens)
+            cant_tokens_doc += len(tokens)
+        if cant_tokens_doc> cant_max_tokens:
+            cant_max_tokens = cant_tokens_doc
+            cant_max_terms = len(termsAux)
+        if cant_min_tokens>cant_tokens_doc or cant_min_tokens == 0:
+            cant_min_tokens = cant_tokens_doc
+            cant_min_terms = len(termsAux)
     for termAux in termsAux:
         if termAux in terms:
             terms[termAux]["cf"] += termsAux[termAux]["cf"]
@@ -56,4 +68,17 @@ print("Cantidad de tokens:", cant_tokens )
 print("Cantidad de terminos:", cant_terms )
 print("promedio de tokens y terminos en los documentos", cant_tokens/cant_files,cant_terms/cant_files)
 print("Largo promedio de un término", terms_length/cant_terms)
+print("Cantidad de tokens del documento más corto y del más largo", cant_max_tokens, cant_min_tokens)
+print("Cantidad de tokens del documento más corto y del más largo", cant_max_terms, cant_min_tokens)
 print("Cantidad de términos que aparecen sólo 1 vez en la colección", unique_terms)
+
+higher_frequency = sorted_terms[:10]
+lower_frequency = sorted_terms[-10:] 
+print("La lista de los 10 términos más frecuentes")
+for term, info in higher_frequency:
+    print(term, info['cf'])
+print("La lista de los 10 términos menos frecuentes")
+for term, info in lower_frequency:
+    print(term, info['cf'])
+
+
