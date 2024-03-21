@@ -1,6 +1,6 @@
 import re
 import os
-import nltk
+import nltk 
 from nltk.stem import PorterStemmer
 from nltk.stem import LancasterStemmer
 #Devuelve el texto formateado 

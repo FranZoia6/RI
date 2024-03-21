@@ -1,15 +1,20 @@
 import re
 import os
+import string
 #Devuelve el texto formateado 
 def tokenizador(text):
-    return re.findall(r'\b\w+\b', text.lower())
-#    intab = "áéíóú"
-#    outtab = "aeiou"
-#    str = text
-#    trantab = str.maketrans(intab, outtab)
-#    normalizado = str.translate(trantab).lower()
-#    normalizado = re.sub(r'[^\w\s]','', normalizado)
-#    return normalizado.split(" ")
+    text = text.lower()
+    intab = "áéíóú"
+    outtab = "aeiou"
+    str = text
+    trantab = str.maketrans(intab, outtab)
+    normalizado = str.translate(trantab)
+    normalizado = re.sub(r'[^a-z0-9 ]','', normalizado)
+    tokens = normalizado.split(" ")
+    if "" in tokens:
+        while "" in tokens:
+            tokens.remove("")
+    return tokens
 
 #Cuanta las ocurrencia de cada termino en el texto    
 def contador(terms, tokens):
