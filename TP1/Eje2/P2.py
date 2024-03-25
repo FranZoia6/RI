@@ -1,9 +1,9 @@
-import re
 import os
+import re
 import sys
 import nltk
 from nltk.corpus import stopwords
-#Devuelve el texto formateado 
+
 def tokenizador(text,dtokens):
     tokens=text.split(" ")
     for token in tokens:
@@ -11,18 +11,69 @@ def tokenizador(text,dtokens):
             dtokens[token]["cf"] += 1
         else:
             dtokens[token] = {"cf": 1}
-    text = text.lower()
+    
+    tokens = []
+    abbreviations, text = extract_abbreviations(text)
+    tokens.extend(abbreviations)
+    mails, text = extract_mails(text)
+    tokens.extend(mails) 
+    numbers, text = extract_numbers(text)
+    tokens.extend(numbers)
+    urls, text = extract_urls(text)
+    for url in urls:
+        formatted_url = f"{url[0]}://{url[1]}{url[2]}"
+        tokens.append(formatted_url)
+    names,text = extract_proper_names(text)
+    tokens.extend(names)
+
+    normalized_text = text.lower()
     intab = "áéíóú"
     outtab = "aeiou"
-    str = text
-    trantab = str.maketrans(intab, outtab)
-    normalizado = str.translate(trantab)
-    normalizado = re.sub(r'[^a-z0-9 ]','', normalizado)
-    tokens = normalizado.split(" ")
+    trantab = normalized_text.maketrans(intab, outtab)
+    normalized_text = normalized_text.translate(trantab)
+    normalized_text = re.sub(r'[^a-z0-9 ]', '', normalized_text)
+    normalized_tokens = normalized_text.split(" ")
+    tokens.extend(normalized_tokens)
+
     if "" in tokens:
         while "" in tokens:
             tokens.remove("")
     return tokens, dtokens
+
+def contador(terms, tokens):
+    for token in tokens:
+        if token in terms:
+            terms[token]["cf"] += 1
+        elif len(token)>2 and len(token)<30:
+            terms[token] = {"cf": 1}
+    return terms
+
+
+def extract_abbreviations(text):
+    token = re.findall(r'\b[A-Z][a-z]+\.', text)
+    text = re.sub(r'\b[A-Z][a-z]+\.','', text)
+    return token, text
+
+def extract_mails(text):
+    tokens = re.findall(r'\b[A-Za-z0-9._]+@[A-Za-z0-9._]+\.[A-Za-z]{2,}\b', text)
+    text = re.sub(r'\b[A-Za-z0-9._-]+@[A-Za-z0-9._-]+\.[A-Za-z]{2,}\b', '', text)
+    return tokens, text
+
+def extract_numbers(text):
+    tokens = re.findall(r'\b\d+\b', text)
+    text = re.sub(r'\b\d+\b','', text)
+    return tokens, text
+
+def extract_urls(text):
+    urls = re.findall(r'(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?', text)
+    text = re.sub(r'(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?','', text)
+    return urls, text
+
+
+def extract_proper_names(text):
+    names = re.findall(r'\b[A-Z][a-z]+(?:\s[A-Z][a-z]+)*\b', text)
+    text = re.sub(r'\b[A-Z][a-z]+(?:\s[A-Z][a-z]+)*\b','', text)
+    return names, text
 
 def remove_sportsworld(terms):
     dic = {}
@@ -33,16 +84,6 @@ def remove_sportsworld(terms):
             dic[term] = terms[term]
     return dic
 
-
-
-#Cuanta las ocurrencia de cada termino en el texto    
-def contador(terms, tokens):
-    for token in tokens:
-        if token in terms:
-            terms[token]["cf"] += 1
-        elif len(token)>2 and len(token)<30:
-            terms[token] = {"cf": 1}
-    return terms
 
 file_location = sys.argv[1]
 cant_files = len(os.listdir(file_location))
@@ -55,13 +96,14 @@ terms_length = 0
 unique_terms = 0
 terms = {}
 dtokens = {}
+
 for path in os.listdir(file_location):
     path = file_location + path
     termsAux = {}
     cant_tokens_doc = 0
     with open(path) as file:
         for linea in file:
-            tokens, dtokens=tokenizador(linea,dtokens)
+            tokens,dtokens=tokenizador(linea,dtokens)
             termsAux = contador(termsAux,tokens)
             cant_tokens_doc += len(tokens)
         if cant_tokens_doc> cant_max_tokens:
@@ -110,6 +152,4 @@ with open("frecuencias.txt", "w") as f:
         f.write(f"{term} {info['cf']} \n")
     for term, info in lower_frequency:
         f.write(f"{term} {info['cf']} \n")
-
-
-
+ 

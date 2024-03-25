@@ -4,7 +4,7 @@ import sys
 import nltk
 from nltk.stem import LancasterStemmer
 from nltk.corpus import stopwords
-#Devuelve el texto formateado 
+
 def tokenizador(text):
     text = text.lower()
     intab = "áéíóú"
@@ -27,16 +27,16 @@ def remove_sportsworld(terms):
         if term not in stopsSp and term not in stopsEn:
             dic[term] = terms[term]
     return dic
-
-#Cuanta las ocurrencia de cada termino en el texto    
+ 
 def contador(terms, tokens):
+    stemmer = LancasterStemmer()
     for token in tokens:
-        stemmer = LancasterStemmer()
         if stemmer.stem(token) in terms:
             terms[stemmer.stem(token)]["cf"] += 1
-        else:
+        elif len(token)>2 and len(token)<15:
             terms[stemmer.stem(token)] = {"cf": 1}
     return terms
+
 file_location = sys.argv[1]
 terms = {}
 for path in os.listdir(file_location):

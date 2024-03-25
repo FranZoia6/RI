@@ -7,7 +7,6 @@ from nltk.stem import LancasterStemmer
 from nltk.corpus import stopwords
 import time
 
-#Devuelve el texto formateado 
 def tokenizador(text):
     text = text.lower()
     intab = "áéíóú"
@@ -30,9 +29,7 @@ def remove_sportsworld(terms):
         if term not in stopsSp and term not in stopsEn:
             dic[term] = terms[term]
     return dic
-
-
-#Cuanta las ocurrencia de cada termino en el texto    
+   
 def contadorPorter(terms, tokens):
     for token in tokens:
         stemmer = PorterStemmer()
