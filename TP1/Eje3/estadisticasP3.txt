@@ -1,0 +1,8 @@
+Cantidad de archivos 498 
+Cantidad de tokens:, 375585 
+Cantidad de terminos: 22930 
+promedio de tokens y terminos en los documentos (754.1867469879518, 46.04417670682731)
+Largo promedio de un término 4.629873528129089
+Cantidad de tokens del documento más corto y del más largo 51096 1
+Cantidad de tokens del documento más corto y del más largo 4957 1
+Cantidad de términos que aparecen sólo 1 vez en la colección 11640

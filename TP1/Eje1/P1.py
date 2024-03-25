@@ -1,6 +1,8 @@
 import re
 import os
-import string
+import sys
+import nltk
+from nltk.corpus import stopwords
 #Devuelve el texto formateado 
 def tokenizador(text,dtokens):
     tokens=text.split(" ")
@@ -22,16 +24,27 @@ def tokenizador(text,dtokens):
             tokens.remove("")
     return tokens, dtokens
 
+def remove_sportsworld(terms):
+    dic = {}
+    stopsSp = set(stopwords.words('spanish'))
+    stopsEn = set(stopwords.words('english'))
+    for term in terms:
+        if term not in stopsSp and term not in stopsEn:
+            dic[term] = terms[term]
+    return dic
+
+
+
 #Cuanta las ocurrencia de cada termino en el texto    
 def contador(terms, tokens):
     for token in tokens:
         if token in terms:
             terms[token]["cf"] += 1
-        else:
+        elif len(token)>2 and len(token)<15:
             terms[token] = {"cf": 1}
     return terms
-
-cant_files = len(os.listdir("../TestCollection/"))
+file_location = sys.argv[1]
+cant_files = len(os.listdir(file_location))
 cant_terms = 0
 cant_min_tokens = 0
 cant_max_tokens = 0
@@ -41,12 +54,12 @@ terms_length = 0
 unique_terms = 0
 terms = {}
 dtokens = {}
-for name in os.listdir("../TestCollection/"):
-    name = "../TestCollection/" + name
+for path in os.listdir(file_location):
+    path = file_location + path
     termsAux = {}
     cant_tokens_doc = 0
-    with open(name) as archivo:
-        for linea in archivo:
+    with open(path) as file:
+        for linea in file:
             tokens, dtokens=tokenizador(linea,dtokens)
             termsAux = contador(termsAux,tokens)
             cant_tokens_doc += len(tokens)
@@ -62,6 +75,9 @@ for name in os.listdir("../TestCollection/"):
             terms[termAux]["df"] += 1
         else:
             terms[termAux] = {"cf": termsAux[termAux]["cf"],"df": 1}
+
+if len(sys.argv)>2:
+    terms = remove_sportsworld(terms)
 
 sorted_terms = sorted(terms.items(), key=lambda item: item[1].get("cf", 0), reverse=True)
 
