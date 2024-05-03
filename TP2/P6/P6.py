@@ -23,20 +23,25 @@ def tokenizador(text):
             tokens.remove("")
     return tokens
 
-def get_score(index,termsDoc, queriText):
+def get_idf(terms):
+    idf = {}
+    for term in terms:
+        idf[term] = math.log(terms[term]["cf"]/ terms[term]["df"])
+    return idf
+
+def get_score(index,queriText, idf):
     score = {}
-    cantDoc = len(index)
     queri = tokenizador(queriText)
     for q in queri:
-        idf = math.log(cantDoc / termsDoc[q]["df"])
         for path,terms in index.items():
             if q in terms:
                 tf = terms[q] / len(terms)
                 if path in score:
-                    score[path] +=  tf*idf
+                    score[path] +=  tf*idf[q]
                 else:
-                    score[path] = tf*idf 
+                    score[path] = tf*idf[q] 
     return score
+        
 
 def contadorTerms(terms, tokens):
     for token in tokens:
@@ -83,9 +88,9 @@ def enumerate_html_files(directory):
 
 root_dir = sys.argv[1] #"wiki-small/"
 index,terms = enumerate_html_files(root_dir)
-
+idf = get_idf(terms)
 queri = 'software'
-score=get_score(index,terms,queri )
+score=get_score(index,queri,idf)
 
 sorted_terms = sorted(score.items(), key=lambda item: item[1], reverse=True)
 
