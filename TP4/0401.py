@@ -77,7 +77,7 @@ def dump_partial_index(sorted_partial_index, filename):
 
 def partial_index(memory,directory,dictionary):
     vocabulary = []
-    reference  = []
+    reference  = {}
     terms = []
     docID = 0
     file_b = 'index/'
@@ -94,21 +94,26 @@ def partial_index(memory,directory,dictionary):
                     term_id = dictionary[term]
                     item = (term_id,docID,frecuency)
                     vocabulary.append(item)
-            reference.append(f"{docID}+{file}")
+            reference[docID] = file
             if docID % memory ==0:
                 path_binario = file_b + str(index_id) + ".bin"
                 sort = sort_vocabulary(vocabulary)
                 sorted_partial_index = list(itertools.chain(*sort))
                 dump_partial_index(sorted_partial_index, path_binario)
                 vocabulary.clear()
+                with open('reference.pickle','ab') as reference_file:
+                    pickle.dump(reference, reference_file)
                 index_id += 1
+                
+
             docID+=1
     if len(vocabulary)>0: 
         path_binario = file_b + str(index_id) + ".bin"
         sort = sort_vocabulary(vocabulary)
         sorted_partial_index = list(itertools.chain(*sort))
         dump_partial_index(sorted_partial_index, path_binario)
-
+    with open('reference.pickle','wb') as reference_file:
+        pickle.dump(reference, reference_file)
 
 
 def marge(directory_index,dictionary,count ):
