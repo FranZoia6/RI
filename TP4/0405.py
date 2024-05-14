@@ -29,30 +29,71 @@ def sort_docId(rank):
     sort = sorted(rank, key=lambda x: x[0])
     return sort
 
-def crear_skip_list(docs_term, n):
-    skip_list = []
+def crear_skip_lists(n):
+    vocabulary = read_pickle('vocabulary.pickle')
+    dictionary = read_pickle('dictionary.pickle')
     frequency = []
     docs = []
     max_freq = 0
-    bloque = 0
-    docs_term = sort_docId(docs_term)
-    for docId, freq in docs_term:
-        frequency.append(freq)
-        docs.append(docId)
-        if max_freq < freq:
-            max_freq = freq
-        bloque +=1
-        if bloque % n == 0:
+    skip_lists = {}
+    for term, termId in dictionary.items():
+        bloque = 1
+        skip_list = []
+        docs_term = search(term,dictionary,vocabulary,'index.bin')
+        docs_term = sort_docId(docs_term)
+        for docId, freq in docs_term:
+            frequency.append(freq)
+            docs.append(docId)
+            if max_freq < freq:
+                max_freq = freq
+            if bloque % n == 0:
+                skip_list.append(((docId, max_freq),docs,frequency))
+                frequency = []
+                docs = []
+                max_freq = 0
+            bloque +=1
+        if len(docs)>0:
             skip_list.append(((docId, max_freq),docs,frequency))
             frequency = []
             docs = []
-            max_freq = 0
-    return skip_list
+            max_freq = 0   
+        
+        skip_lists[termId] = skip_list
 
 
-vocabulary = read_pickle('vocabulary.pickle')
-dictionary = read_pickle('dictionary.pickle')
-docs_term = search('lluvia',dictionary,vocabulary,'index.bin')
-print(crear_skip_list(docs_term,5))
+        
+    return skip_lists
+
+
+def operator_and (docs,skip_list):
+    result = []
+    for doc in docs:
+        for max,docsId,freq in skip_list:
+            if doc>max[0]:
+                continue 
+            else: 
+                for docId in docsId:
+                    if docId == doc:
+                        result.append(doc)
+                    elif doc<docId:
+                        continue
+
+
+    return result
+
+
+
+
+
+skip_lists = crear_skip_lists(6)
+term1 = skip_lists[9]
+docs = []
+for _,docsId, _ in term1:
+    docs.extend(docsId)
+term2 = skip_lists[22]
+print(term2)
+print(operator_and(docs,term2))
+
+
 
 

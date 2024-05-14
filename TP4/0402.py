@@ -62,18 +62,6 @@ def operator_or (doc_term1,doc_term2):
         result.append((docId,frequency))
     return result
 
-#def query(q):
-
-    
-pila = []
-vocabulary = read_pickle('vocabulary.pickle')
-dictionary = read_pickle('dictionary.pickle')
-query = 'casa AND lluvia'
-query = query.split()
-pila = query
-pila2 = []
-i = 0
-array_docs = []
 
 def operadores(operador, doc_term1,doc_term2):
     if operador == "OR":
@@ -84,6 +72,16 @@ def operadores(operador, doc_term1,doc_term2):
         result = operator_not(doc_term1,doc_term2)
     return result
 
+
+pila = []
+vocabulary = read_pickle('vocabulary.pickle')
+dictionary = read_pickle('dictionary.pickle')
+query = 'casa AND lluvia'
+query = query.split()
+pila = query
+pila2 = []
+i = 0
+array_docs = []
 
 while len(pila) != 0:
     term = pila.pop()
