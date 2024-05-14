@@ -1,15 +1,8 @@
 import itertools
 import re
-import math
 import struct
-import nltk
-from nltk.corpus import stopwords
 import os
 import sys
-import pyterrier as pt
-import numpy as np
-from scipy.stats import spearmanr
-import timeit
 import time
 from bs4 import BeautifulSoup
 import pickle
@@ -37,15 +30,6 @@ def counter_terms(tokens):
         else:
             terms[token] = 1
     return terms
-
-def remove_sportsworld(terms):
-    dic = {}
-    stopsSp = set(stopwords.words('spanish'))
-    stopsEn = set(stopwords.words('english'))
-    for term in terms:
-        if term not in stopsSp and term not in stopsEn:
-            dic[term] = terms[term]
-    return dic
 
 
 def create_dictionary(directory):
